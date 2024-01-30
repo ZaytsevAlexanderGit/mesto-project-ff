@@ -1,7 +1,14 @@
 const listForCards = document.querySelector(".places__list");
+const profileName = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
+
+let profileAvatar = document.querySelector(".profile__image");
+
 const cardTemplate = document
   .querySelector("#card-template")
   .content.querySelector(".card");
+
+////------------------------------ Изменение профиля
 
 const profileEditButton = document.querySelector(".profile__edit-button");
 const profileEditPopup = document.querySelector(".popup_type_edit");
@@ -13,6 +20,34 @@ profileEditButton.addEventListener("click", () => {
     profileEditPopup.classList.remove("popup_is-opened", "popup_is-animated");
   });
 });
+
+const changeProfileBtn = profileEditPopup.querySelector(".popup__button");
+changeProfileBtn.addEventListener("click", (event) => {
+  let profileNewName = profileEditPopup.querySelector(
+    ".popup__input_type_name"
+  );
+  let profileNewDescription = profileEditPopup.querySelector(
+    ".popup__input_type_description"
+  );
+  ////----------------
+  let profileNewAvatar = profileEditPopup.querySelector(
+    ".popup__input_type_avatar-url"
+  );
+  ////----------------
+  profileName.textContent = profileNewName.value;
+  profileDescription.textContent = profileNewDescription.value;
+
+  profileAvatar.style.backgroundImage = `url(${profileNewAvatar.value})`;
+
+  event.preventDefault();
+  profileNewName.value =
+    profileNewDescription.value =
+    profileNewAvatar.value =
+      "";
+  profileEditPopup.classList.remove("popup_is-opened", "popup_is-animated");
+});
+
+////------------------------------ Добавление новой карточки
 
 const cardAddButton = document.querySelector(".profile__add-button");
 const cardAddPopup = document.querySelector(".popup_type_new-card");
@@ -34,13 +69,20 @@ addPlaceBtn.addEventListener("click", (event) => {
   cardsForRender.push(newElem);
   renderInitialCards(cardsForRender);
   event.preventDefault();
-  cardAddPopup.classList.remove("popup_is-opened", "popup_is-animated");
   placeName.value = placeAdress.value = "";
+  cardAddPopup.classList.remove("popup_is-opened", "popup_is-animated");
 });
+
+///------------------------------ Функции работы с картинками
 
 const imagePopup = document.querySelector(".popup_type_image");
 
 let cardsForRender = initialCards;
+
+// let cardsForRender = JSON.parse(localStorage.getItem("dataList"));
+// if (cardsForRender.length === 0) {
+//   cardsForRender = initialCards;
+// }
 
 function deleteCard(card) {
   card.remove();
@@ -86,21 +128,23 @@ function renderInitialCards(dataList) {
   dataList.forEach((element) => {
     listForCards.append(createCard(element, deleteCard, likeCard));
   });
+  // localStorage.setItem("dataList", JSON.stringify(dataList));
 }
 
 function clearRender() {
   // listForCards.innerHTML = "";
-  listForCards.querySelectorAll('.places__item').forEach((element) => {
+  listForCards.querySelectorAll(".places__item").forEach((element) => {
     element.remove();
   });
 }
 
-window.addEventListener('keydown', function (event) {
-  if (event.key === 'Escape') {
+window.addEventListener("keydown", function (event) {
+  if (event.key === "Escape") {
     profileEditPopup.classList.remove("popup_is-opened", "popup_is-animated");
     cardAddPopup.classList.remove("popup_is-opened", "popup_is-animated");
     imagePopup.classList.remove("popup_is-opened", "popup_is-animated");
   }
-})
+});
 
 renderInitialCards(cardsForRender);
+// localStorage.removeItem("dataList");git a
