@@ -4,6 +4,20 @@ const profileDescription = document.querySelector(".profile__description");
 
 let profileAvatar = document.querySelector(".profile__image");
 
+let cardsForRender = JSON.parse(localStorage.getItem("dataList"));
+if (cardsForRender === null) {
+  cardsForRender = initialCards;
+}
+
+// localStorage.removeItem("dataList");
+// localStorage.removeItem("profileInfo");
+
+let currAccount = JSON.parse(localStorage.getItem("profileInfo"));
+if (currAccount === null) {
+} else {
+  applyAccount(currAccount);
+}
+
 const cardTemplate = document
   .querySelector("#card-template")
   .content.querySelector(".card");
@@ -22,6 +36,13 @@ profileEditButton.addEventListener("click", () => {
 });
 
 const changeProfileBtn = profileEditPopup.querySelector(".popup__button");
+
+function applyAccount(accInfo) {
+  profileName.textContent = accInfo["name"];
+  profileDescription.textContent = accInfo["description"];
+  profileAvatar.style.backgroundImage = accInfo["avatar"];
+}
+
 changeProfileBtn.addEventListener("click", (event) => {
   let profileNewName = profileEditPopup.querySelector(
     ".popup__input_type_name"
@@ -39,11 +60,18 @@ changeProfileBtn.addEventListener("click", (event) => {
 
   profileAvatar.style.backgroundImage = `url(${profileNewAvatar.value})`;
 
+  let element = {
+    name: profileNewName.value,
+    description: profileNewDescription.value,
+    avatar: `url(${profileNewAvatar.value})`,
+  };
+
   event.preventDefault();
   profileNewName.value =
     profileNewDescription.value =
     profileNewAvatar.value =
       "";
+  localStorage.setItem("profileInfo", JSON.stringify(element));
   profileEditPopup.classList.remove("popup_is-opened", "popup_is-animated");
 });
 
@@ -77,15 +105,17 @@ addPlaceBtn.addEventListener("click", (event) => {
 
 const imagePopup = document.querySelector(".popup_type_image");
 
-let cardsForRender = initialCards;
-
-// let cardsForRender = JSON.parse(localStorage.getItem("dataList"));
-// if (cardsForRender.length === 0) {
-//   cardsForRender = initialCards;
-// }
+// let cardsForRender = initialCards;
 
 function deleteCard(card) {
   card.remove();
+  for (i = 0; i < cardsForRender.length; i++) {
+    if (cardsForRender[i]["link"] === card.querySelector(".card__image").src) {
+      cardsForRender.splice(i, 1);
+      localStorage.setItem("dataList", JSON.stringify(cardsForRender));
+      break;
+    }
+  }
 }
 
 function likeCard(button) {
@@ -128,7 +158,7 @@ function renderInitialCards(dataList) {
   dataList.forEach((element) => {
     listForCards.append(createCard(element, deleteCard, likeCard));
   });
-  // localStorage.setItem("dataList", JSON.stringify(dataList));
+  localStorage.setItem("dataList", JSON.stringify(dataList));
 }
 
 function clearRender() {
@@ -147,4 +177,4 @@ window.addEventListener("keydown", function (event) {
 });
 
 renderInitialCards(cardsForRender);
-// localStorage.removeItem("dataList");git a
+
