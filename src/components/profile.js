@@ -1,13 +1,13 @@
 //-----------------------------------------------------------------
 // Импорт необходимых DOM элементов и функций
 import { closeModal } from "./modal";
-import { profileEditModal } from "../index";
+import { profileEditModal } from "./index";
 import {
   profileTitle,
   profileDescription,
   profileFormTitle,
   profileFormDescription,
-} from "../index";
+} from "./index";
 
 //-----------------------------------------------------------------
 // Функция работы формы с редактированием профиля
