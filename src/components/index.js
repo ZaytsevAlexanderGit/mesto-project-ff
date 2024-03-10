@@ -1,15 +1,18 @@
 // Импорт CSS и других JS модулей
 import "../pages/index.css";
 import { closeModal, openModal, overlayClickModalClose } from "./modal.js";
-// import cardsForRender from "./cards.js";
-import { createCard, deleteCard, likeCard } from "./card.js";
+import { createCard } from "./card.js";
 import { enableValidation, clearValidation } from "./validation.js";
 import {
   addNewCardOnServer,
   loadDataFromServer,
   updateProfile,
-  deleteOwncardFromServer,
+  likeCardOnServer,
+  deleteOwnCardFromServer,
+  updateProfileAvatar,
 } from "./api.js";
+
+let myGlobalID;
 
 const validationConfig = {
   formSelector: ".popup__form",
@@ -25,7 +28,7 @@ const validationConfig = {
 export const profileEditModal = document.querySelector(".popup_type_edit");
 const addCardModal = document.querySelector(".popup_type_new-card");
 export const imageModal = document.querySelector(".popup_type_image");
-// const timeModalAnimation = "600";
+const avatarEditModal = document.querySelector(".popup_type_avatar");
 
 enableValidation(validationConfig);
 
@@ -47,11 +50,19 @@ const addCardFormLink = addCardForm.elements["link"];
 // Объявление DOM элементов связанных с профилем
 const profileEditButton = document.querySelector(".profile__edit-button");
 const profileClosedButton = profileEditModal.querySelector(".popup__close");
+
+const avatarEditButton = document.querySelector(".profile__edit-avatar");
+const avatarClosedButton = avatarEditModal.querySelector(".popup__close");
+
 export const profileTitle = document.querySelector(".profile__title");
 export const profileDescription = document.querySelector(
   ".profile__description"
 );
-export const profileAvatar = document.querySelector(".profile__image");
+export const avatarForm = document.forms["new-avatar"];
+export const avatarFormLink = avatarForm.elements["avatar"];
+
+export const profileAvatarPlace = document.querySelector(".profile__image");
+
 export const profileForm = document.forms["edit-profile"];
 export const profileFormTitle = profileForm.elements["name"];
 export const profileFormDescription = profileForm.elements["description"];
@@ -59,11 +70,14 @@ export const profileFormDescription = profileForm.elements["description"];
 let userDataFields = {
   name: profileTitle,
   about: profileDescription,
-  avatar: profileAvatar,
+  avatar: profileAvatarPlace,
 };
 
-//---НОВОЕ!!!------------------------------------------------------
-loadDataFromServer(userDataFields, renderInitialCards);
+//Первичный рендер карточек с сервера.
+loadDataFromServer(userDataFields, renderInitialCards).then((result) => {
+  myGlobalID = result["_id"];
+});
+
 //-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
@@ -80,9 +94,8 @@ function renderInitialCards(dataList, userData) {
       createCard(
         element,
         {
-          // delete: deleteCard,
-          delete: deleteOwncardFromServer,
-          like: likeCard,
+          delete: deleteOwnCardFromServer,
+          like: likeCardOnServer,
           zoom: imageZoomFunction,
         },
         userData
@@ -91,14 +104,12 @@ function renderInitialCards(dataList, userData) {
   });
 }
 
-// Отрисовка изначальных карточек
-// renderInitialCards(cardsForRender);
-
 //-----------------------------------------------------------------
 // Назначение Listener-ов на основные кнопки и модальные окна
 //-----------------------------------------------------------------
-// Назначения для профиля
+// Назначения для редактирования данных профиля и аватара
 
+// Данныые профиля
 profileEditButton.addEventListener("click", () => {
   openModal(profileEditModal);
   profileFormTitle.value = profileTitle.textContent;
@@ -112,8 +123,22 @@ profileClosedButton.addEventListener("click", () => {
   closeModal(profileEditModal);
 });
 
+// Данныые аватара
+avatarEditButton.addEventListener("click", () => {
+  openModal(avatarEditModal);
+  clearValidation(avatarEditModal, validationConfig);
+});
+
+avatarEditModal.addEventListener("click", overlayClickModalClose);
+
+avatarClosedButton.addEventListener("click", () => {
+  closeModal(avatarEditModal);
+});
+
 //-----------------------------------------------------------------
-// Функция работы формы с редактированием профиля
+// Функция работы формы с редактированием профиля и аватара
+
+// Данныые профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   updateProfile(
@@ -127,6 +152,20 @@ function handleProfileFormSubmit(evt) {
 }
 
 profileForm.addEventListener("submit", handleProfileFormSubmit);
+
+// Данныые аватара
+function handleAvatarFormSubmit(evt) {
+  evt.preventDefault();
+  updateProfileAvatar(
+    {
+      avatar: avatarFormLink.value,
+    },
+    userDataFields
+  );
+  closeModal(avatarEditModal);
+}
+
+avatarForm.addEventListener("submit", handleAvatarFormSubmit);
 
 //-----------------------------------------------------------------
 // Назначения для обработки работы с карточками
@@ -145,12 +184,16 @@ function handleCardAddFormSubmit(evt) {
     name: addCardFormTitle.value,
     link: addCardFormLink.value,
   };
-  addNewCardOnServer(element, createCard, {
-    // delete: deleteCard,
-    delete: deleteOwncardFromServer,
-    like: likeCard,
-    zoom: imageZoomFunction,
-  }).then((card) => listForCards.prepend(card));
+  addNewCardOnServer(
+    element,
+    createCard,
+    {
+      delete: deleteOwnCardFromServer,
+      like: likeCardOnServer,
+      zoom: imageZoomFunction,
+    },
+    myGlobalID
+  ).then((card) => listForCards.prepend(card));
   closeModal(addCardModal);
 }
 

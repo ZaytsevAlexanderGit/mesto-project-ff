@@ -8,6 +8,9 @@ const allProfilesonServer = "users";
 const cardsOnServer = "cards";
 // const serverUrl2 = "https://mesto.nomoreparties.co/v1/";
 // MY_id: "aa281386afe31656bce92e6d"
+// default_Avatar_url : https://pictures.s3.yandex.net/frontend-developer/common/ava.jpg
+// some_Avatar: https://cs14.pikabu.ru/post_img/big/2023/02/13/8/1676295806139337963.png
+// other_Avatar: https://cs13.pikabu.ru/post_img/big/2023/02/13/8/1676295805154099895.png
 
 // Функция вывода данных о пользователе на странице
 function showUserProfileInfo(userDataFields, user) {
@@ -49,11 +52,12 @@ function getCards() {
 
 // Функция объединяющая и вызывающая загрузку данных с сервера
 export function loadDataFromServer(userDataFields, renderFunction) {
-  Promise.all([getUser(), getCards()]).then((result) => {
+  return Promise.all([getUser(), getCards()]).then((result) => {
     let user = result[0];
     let cards = result[1];
     showUserProfileInfo(userDataFields, user);
-    renderFunction(cards, user);
+    renderFunction(cards, user["_id"]);
+    return user;
   });
 }
 
@@ -79,11 +83,31 @@ export function updateProfile(manualProfileData, userDataFields) {
     });
 }
 
+// Функция обновления аватара пользователя на сервере
+export function updateProfileAvatar(manualProfileData, userDataFields) {
+  console.log(manualProfileData);
+  fetch(serverUrl + cohortToken + profileOnServer + "/avatar", {
+    method: "PATCH",
+    headers: {
+      authorization: token,
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({
+      avatar: manualProfileData.avatar,
+    }),
+  })
+    .then((res) => res.json())
+    .then((user) => {
+      showUserProfileInfo(userDataFields, user);
+    });
+}
+
 // Функция добавления новой карточки
 export function addNewCardOnServer(
   newCardInformation,
   createCardFunction,
-  cardOperationsFunctions
+  cardOperationsFunctions,
+  userData
 ) {
   return fetch(serverUrl + cohortToken + cardsOnServer, {
     method: "POST",
@@ -98,12 +122,12 @@ export function addNewCardOnServer(
   })
     .then((res) => res.json())
     .then((card) => {
-      return createCardFunction(card, cardOperationsFunctions);
+      return createCardFunction(card, cardOperationsFunctions, userData);
     });
 }
 
 // Функция удаления своей карточки
-export function deleteOwncardFromServer(cardInfo) {
+export function deleteOwnCardFromServer(cardInfo) {
   return fetch(serverUrl + cohortToken + cardsOnServer + "/" + cardInfo, {
     method: "DELETE",
     headers: {
@@ -114,4 +138,37 @@ export function deleteOwncardFromServer(cardInfo) {
     .then((response) => {
       return response;
     });
+}
+
+// Функция работы с лайком
+export function likeCardOnServer(cardInfo, isActive) {
+  if (!isActive) {
+    return fetch(
+      serverUrl + cohortToken + cardsOnServer + "/likes/" + cardInfo,
+      {
+        method: "PUT",
+        headers: {
+          authorization: token,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((response) => {
+        return response;
+      });
+  } else {
+    return fetch(
+      serverUrl + cohortToken + cardsOnServer + "/likes/" + cardInfo,
+      {
+        method: "DELETE",
+        headers: {
+          authorization: token,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((response) => {
+        return response;
+      });
+  }
 }
