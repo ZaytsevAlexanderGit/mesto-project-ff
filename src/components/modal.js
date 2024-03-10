@@ -8,7 +8,7 @@ function findOpenedModal() {
 // Функции открытия и закрытия модального окна
 export function openModal(element) {
   element.classList.add("popup_is-opened");
-  document.addEventListener("keydown", escModalClose);
+  document.addEventListener("keydown", escModalClose);  
 }
 
 export function closeModal(element) {
@@ -18,7 +18,7 @@ export function closeModal(element) {
 
 export function overlayClickModalClose(evt) {
   if (evt.target.classList.contains("popup_is-opened")) {
-    closeModal(findOpenedModal());
+    closeModal(evt.target);
   }
 }
 

@@ -1,16 +1,33 @@
 // Импорт CSS и других JS модулей
 import "../pages/index.css";
 import { closeModal, openModal, overlayClickModalClose } from "./modal.js";
-import cardsForRender from "./cards.js";
+// import cardsForRender from "./cards.js";
 import { createCard, deleteCard, likeCard } from "./card.js";
-import { handleProfileFormSubmit } from "./profile.js";
+import { enableValidation, clearValidation } from "./validation.js";
+import {
+  addNewCardOnServer,
+  loadDataFromServer,
+  updateProfile,
+  deleteOwncardFromServer,
+} from "./api.js";
+
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
 
 //-----------------------------------------------------------------
 // Объявление DOM всех модальных окон + константа время анимации окон
 export const profileEditModal = document.querySelector(".popup_type_edit");
 const addCardModal = document.querySelector(".popup_type_new-card");
 export const imageModal = document.querySelector(".popup_type_image");
-const timeModalAnimation = "600";
+// const timeModalAnimation = "600";
+
+enableValidation(validationConfig);
 
 //-----------------------------------------------------------------
 // Объявление DOM элементов связанных с добавлением, работой с карточками
@@ -34,9 +51,20 @@ export const profileTitle = document.querySelector(".profile__title");
 export const profileDescription = document.querySelector(
   ".profile__description"
 );
-const profileForm = document.forms["edit-profile"];
+export const profileAvatar = document.querySelector(".profile__image");
+export const profileForm = document.forms["edit-profile"];
 export const profileFormTitle = profileForm.elements["name"];
 export const profileFormDescription = profileForm.elements["description"];
+
+let userDataFields = {
+  name: profileTitle,
+  about: profileDescription,
+  avatar: profileAvatar,
+};
+
+//---НОВОЕ!!!------------------------------------------------------
+loadDataFromServer(userDataFields, renderInitialCards);
+//-----------------------------------------------------------------
 
 //-----------------------------------------------------------------
 // Объявление DOM элементов связанных с картинкой карточки
@@ -46,29 +74,36 @@ const imageCloseButton = imageModal.querySelector(".popup__close");
 
 //-----------------------------------------------------------------
 // Определение функции первичного рендера карточек и их отрисовка
-function renderInitialCards(dataList) {
+function renderInitialCards(dataList, userData) {
   dataList.forEach((element) => {
     listForCards.append(
-      createCard(element, {
-        delete: deleteCard,
-        like: likeCard,
-        zoom: imageZoomFunction,
-      })
+      createCard(
+        element,
+        {
+          // delete: deleteCard,
+          delete: deleteOwncardFromServer,
+          like: likeCard,
+          zoom: imageZoomFunction,
+        },
+        userData
+      )
     );
   });
 }
 
 // Отрисовка изначальных карточек
-renderInitialCards(cardsForRender);
+// renderInitialCards(cardsForRender);
 
 //-----------------------------------------------------------------
 // Назначение Listener-ов на основные кнопки и модальные окна
 //-----------------------------------------------------------------
 // Назначения для профиля
+
 profileEditButton.addEventListener("click", () => {
   openModal(profileEditModal);
   profileFormTitle.value = profileTitle.textContent;
   profileFormDescription.value = profileDescription.textContent;
+  clearValidation(profileForm, validationConfig);
 });
 
 profileEditModal.addEventListener("click", overlayClickModalClose);
@@ -77,12 +112,28 @@ profileClosedButton.addEventListener("click", () => {
   closeModal(profileEditModal);
 });
 
+//-----------------------------------------------------------------
+// Функция работы формы с редактированием профиля
+function handleProfileFormSubmit(evt) {
+  evt.preventDefault();
+  updateProfile(
+    {
+      name: profileFormTitle.value,
+      about: profileFormDescription.value,
+    },
+    userDataFields
+  );
+  closeModal(profileEditModal);
+}
+
 profileForm.addEventListener("submit", handleProfileFormSubmit);
 
 //-----------------------------------------------------------------
 // Назначения для обработки работы с карточками
 addCardButton.addEventListener("click", () => {
   openModal(addCardModal);
+  addCardForm.reset();
+  clearValidation(addCardForm, validationConfig);
 });
 
 addCardForm.addEventListener("submit", handleCardAddFormSubmit);
@@ -94,15 +145,13 @@ function handleCardAddFormSubmit(evt) {
     name: addCardFormTitle.value,
     link: addCardFormLink.value,
   };
+  addNewCardOnServer(element, createCard, {
+    // delete: deleteCard,
+    delete: deleteOwncardFromServer,
+    like: likeCard,
+    zoom: imageZoomFunction,
+  }).then((card) => listForCards.prepend(card));
   closeModal(addCardModal);
-  listForCards.prepend(
-    createCard(element, {
-      delete: deleteCard,
-      like: likeCard,
-      zoom: imageZoomFunction,
-    })
-  );
-  setTimeout(() => addCardForm.reset(), timeModalAnimation);
 }
 
 addCardModal.addEventListener("click", overlayClickModalClose);

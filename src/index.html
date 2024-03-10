@@ -13,7 +13,7 @@
     <div class="page__content">
       <header class="header page__section">
         <img
-          src="<%=require('./images/logo.svg')%>"
+          src="<%=require ('./images/logo.svg')%>"
           alt="Логотип проекта место"
           class="logo header__logo"
         />
@@ -22,12 +22,11 @@
         <section class="profile page__section">
           <div
             class="profile__image"
-            style="background-image: url(<%=require('./images/avatar.jpg')%>)"
           ></div>
           <div class="profile__info">
-            <h1 class="profile__title">Жак-Ив Кусто</h1>
+            <h1 class="profile__title"></h1>
             <button class="profile__edit-button" type="button"></button>
-            <p class="profile__description">Исследователь океана</p>
+            <p class="profile__description"></p>
           </div>
           <button class="profile__add-button" type="button"></button>
         </section>
@@ -42,21 +41,37 @@
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Редактировать профиль</h3>
-          <form class="popup__form" name="edit-profile">
-            <input
-              type="text"
-              name="name"
-              class="popup__input popup__input_type_name"
-              placeholder="Имя"
-              required
-            />
-            <input
-              type="text"
-              name="description"
-              class="popup__input popup__input_type_description"
-              placeholder="Занятие"
-              required
-            />
+          <form class="popup__form" name="edit-profile" novalidate>
+            <label class="popup__form__field">
+              <input
+                type="text"
+                name="name"
+                minlength="2"
+                maxlength="40"
+                pattern="[a-zA-Zа-яёА-ЯЁ\-\s]+"
+                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+                id="name-input"
+                class="popup__input popup__input_type_name"
+                placeholder="Имя"
+                required
+              />
+              <span class="name-input-error popup__input-error"></span>
+            </label>
+            <label class="popup__form__field">
+              <input
+                type="text"
+                name="description"
+                minlength="2"
+                maxlength="200"
+                pattern="[a-zA-Zа-яёА-ЯЁ\-\s]+"
+                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+                id="description-input"
+                class="popup__input popup__input_type_description"
+                placeholder="Занятие"
+                required
+              />
+              <span class="description-input-error popup__input-error"></span>
+            </label>
             <button type="submit" class="button popup__button">
               Сохранить
             </button>
@@ -67,21 +82,35 @@
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Новое место</h3>
-          <form class="popup__form" name="new-place">
-            <input
-              type="text"
-              name="place-name"
-              class="popup__input popup__input_type_card-name"
-              placeholder="Название"
-              required
-            />
-            <input
-              type="url"
-              name="link"
-              class="popup__input popup__input_type_url"
-              placeholder="Ссылка на картинку"
-              required
-            />
+          <form class="popup__form" name="new-place" novalidate>
+            <label class="popup__form__field">
+              <input
+                type="text"
+                name="place-name"
+                minlength="2"
+                maxlength="30"
+                pattern="[a-zA-Zа-яёА-ЯЁ\-\s]+"
+                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+                id="place-name-input"
+                class="popup__input popup__input_type_card-name"
+                placeholder="Название"
+                required
+              />
+              <span class="place-name-input-error popup__input-error"></span>
+            </label>
+            <label class="popup__form__field">
+              <input
+                type="url"
+                name="link"
+                pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"  
+                data-error-message="Введите действительный URL-адрес"
+                id="link-input"
+                class="popup__input popup__input_type_url"
+                placeholder="Ссылка на картинку"
+                required
+              />
+              <span class="link-input-error popup__input-error"></span>
+            </label>
             <button type="submit" class="button popup__button">
               Сохранить
             </button>
@@ -103,7 +132,10 @@
         <button type="button" class="card__delete-button"></button>
         <div class="card__description">
           <h2 class="card__title"></h2>
-          <button type="button" class="card__like-button"></button>
+          <div class="card__like">
+            <button type="button" class="card__like-button"></button>
+            <p class="card__like-amount"></p>
+          </div>
         </div>
       </li>
     </template>

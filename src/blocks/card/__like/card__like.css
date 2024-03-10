@@ -1,0 +1,11 @@
+.card__like {
+  display: flex;
+  flex-direction: column;
+}
+
+.card__like-amount {
+  font-size: 13px;
+  line-height: 1.21;
+  text-align: center;
+  margin:0;
+}

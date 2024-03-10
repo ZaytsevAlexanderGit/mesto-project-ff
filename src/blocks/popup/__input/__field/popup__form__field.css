@@ -1,0 +1,27 @@
+.popup__form__field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  inline-size: 100%;
+}
+
+.popup__input-error {
+  z-index: 1;
+  position: absolute;
+  display: block;
+  font-size: 12px;
+  padding: 10px 0 10px 10px;
+  line-height: 1.21;
+  left: 0;
+  top: 40px;
+  color: rgba(255, 0, 0, 0);
+}
+
+.popup__input_type_error {
+  border-bottom: 1px solid rgba(255, 0, 0, 1);
+}
+
+.popup__error_visible {
+  color: rgba(255, 0, 0, 1);
+}
