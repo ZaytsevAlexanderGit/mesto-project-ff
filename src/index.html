@@ -73,7 +73,7 @@
               />
               <span class="description-input-error popup__input-error"></span>
             </label>
-            <button type="submit" class="button popup__button">
+            <button type="submit" name="button" class="button popup__button">
               Сохранить
             </button>
           </form>
@@ -98,7 +98,7 @@
               />
               <span class="avatar-input-error popup__input-error"></span>
             </label>
-            <button type="submit" class="button popup__button">
+            <button type="submit" name="button" class="button popup__button">
               Сохранить
             </button>
           </form>
@@ -138,8 +138,27 @@
               />
               <span class="link-input-error popup__input-error"></span>
             </label>
-            <button type="submit" class="button popup__button">
+            <button type="submit" name="button" class="button popup__button">
               Сохранить
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="popup popup_type_error popup_is-animated">
+        <div class="popup__content popup_type_error">
+          <button type="button" class="popup__close"></button>
+          <h3 class="popup__title"></h3>
+        </div>
+      </div>
+
+      <div class="popup popup_type_delete popup_is-animated">
+        <div class="popup__content popup_type_error">
+          <button type="button" class="popup__close"></button>
+          <h3 class="popup__title">Вы уверены?</h3>
+          <form class="popup__form" name="delete" novalidate>
+            <button type="submit" name="button" class="button popup__button">
+              Да
             </button>
           </form>
         </div>

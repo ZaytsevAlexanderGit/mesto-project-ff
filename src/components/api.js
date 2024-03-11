@@ -1,11 +1,14 @@
 //-----------------------------------------------------------------
 // Объявление констант для API
 const token = "18bb9129-3f51-4697-b5c4-3a78dfed04ce";
-const cohortToken = "wff-cohort-9/";
+
 const serverUrl = "https://nomoreparties.co/v1/";
-const profileOnServer = "users/me";
-const allProfilesonServer = "users";
-const cardsOnServer = "cards";
+const cohortToken = "wff-cohort-9/";
+const profileOnServer = "users/me/";
+const avatarOnServer = "avatar/";
+const cardsOnServer = "cards/";
+const likesOnServer = "likes/";
+
 // const serverUrl2 = "https://mesto.nomoreparties.co/v1/";
 // MY_id: "aa281386afe31656bce92e6d"
 // default_Avatar_url : https://pictures.s3.yandex.net/frontend-developer/common/ava.jpg
@@ -30,7 +33,12 @@ function getUser() {
       authorization: token,
     },
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`${res.status}`);
+    })
     .then((result) => {
       return result;
     });
@@ -44,7 +52,12 @@ function getCards() {
       authorization: token,
     },
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`${res.status}`);
+    })
     .then((result) => {
       return result;
     });
@@ -52,13 +65,17 @@ function getCards() {
 
 // Функция объединяющая и вызывающая загрузку данных с сервера
 export function loadDataFromServer(userDataFields, renderFunction) {
-  return Promise.all([getUser(), getCards()]).then((result) => {
-    let user = result[0];
-    let cards = result[1];
-    showUserProfileInfo(userDataFields, user);
-    renderFunction(cards, user["_id"]);
-    return user;
-  });
+  return Promise.all([getUser(), getCards()])
+    .then((res) => {
+      let user = res[0];
+      let cards = res[1];
+      showUserProfileInfo(userDataFields, user);
+      renderFunction(cards, user["_id"]);
+      return user;
+    })
+    .catch((err) => {
+      return Promise.reject(`Ошибка сервера: ${err}`);
+    });
 }
 
 //-----------------------------------------------------------------
@@ -66,7 +83,7 @@ export function loadDataFromServer(userDataFields, renderFunction) {
 
 // Функция обновления данных о пользователе на сервере
 export function updateProfile(manualProfileData, userDataFields) {
-  fetch(serverUrl + cohortToken + profileOnServer, {
+  return fetch(serverUrl + cohortToken + profileOnServer, {
     method: "PATCH",
     headers: {
       authorization: token,
@@ -77,7 +94,12 @@ export function updateProfile(manualProfileData, userDataFields) {
       about: manualProfileData.about,
     }),
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка сервера: ${res.status}`);
+    })
     .then((user) => {
       showUserProfileInfo(userDataFields, user);
     });
@@ -85,8 +107,7 @@ export function updateProfile(manualProfileData, userDataFields) {
 
 // Функция обновления аватара пользователя на сервере
 export function updateProfileAvatar(manualProfileData, userDataFields) {
-  console.log(manualProfileData);
-  fetch(serverUrl + cohortToken + profileOnServer + "/avatar", {
+  return fetch(serverUrl + cohortToken + profileOnServer + avatarOnServer, {
     method: "PATCH",
     headers: {
       authorization: token,
@@ -96,7 +117,12 @@ export function updateProfileAvatar(manualProfileData, userDataFields) {
       avatar: manualProfileData.avatar,
     }),
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка сервера: ${res.status}`);
+    })
     .then((user) => {
       showUserProfileInfo(userDataFields, user);
     });
@@ -120,7 +146,12 @@ export function addNewCardOnServer(
       link: newCardInformation.link,
     }),
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка сервера: ${res.status}`);
+    })
     .then((card) => {
       return createCardFunction(card, cardOperationsFunctions, userData);
     });
@@ -128,13 +159,19 @@ export function addNewCardOnServer(
 
 // Функция удаления своей карточки
 export function deleteOwnCardFromServer(cardInfo) {
-  return fetch(serverUrl + cohortToken + cardsOnServer + "/" + cardInfo, {
+  return fetch(serverUrl + cohortToken + cardsOnServer + cardInfo, {
     method: "DELETE",
     headers: {
       authorization: token,
     },
   })
-    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка сервера: ${res.status}`);
+    })
     .then((response) => {
       return response;
     });
@@ -144,7 +181,7 @@ export function deleteOwnCardFromServer(cardInfo) {
 export function likeCardOnServer(cardInfo, isActive) {
   if (!isActive) {
     return fetch(
-      serverUrl + cohortToken + cardsOnServer + "/likes/" + cardInfo,
+      serverUrl + cohortToken + cardsOnServer + likesOnServer + cardInfo,
       {
         method: "PUT",
         headers: {
@@ -152,13 +189,18 @@ export function likeCardOnServer(cardInfo, isActive) {
         },
       }
     )
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(`Ошибка сервера: ${res.status}`);
+      })
       .then((response) => {
         return response;
       });
   } else {
     return fetch(
-      serverUrl + cohortToken + cardsOnServer + "/likes/" + cardInfo,
+      serverUrl + cohortToken + cardsOnServer + likesOnServer + cardInfo,
       {
         method: "DELETE",
         headers: {
@@ -166,7 +208,12 @@ export function likeCardOnServer(cardInfo, isActive) {
         },
       }
     )
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(`Ошибка сервера: ${res.status}`);
+      })
       .then((response) => {
         return response;
       });

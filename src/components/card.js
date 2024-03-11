@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------
 // Импорт необходимых DOM элементов и функций
-import { imageModal, cardTemplate } from "./index";
-
+import { imageModal, errorModal, cardTemplate, setErrorText } from "./index";
+import { openModal } from "./modal";
 //-----------------------------------------------------------------
 // Функция создания карточки + функции необходимые для этого (удаление, лайк, zoom)
 export function createCard(data, functions, currUserData) {
@@ -19,7 +19,7 @@ export function createCard(data, functions, currUserData) {
   imageCardElement.addEventListener("click", () => {
     functions.zoom(imageModal, data);
   });
-  
+
   likeButton.addEventListener("click", () => {
     functions
       .like(
@@ -28,14 +28,24 @@ export function createCard(data, functions, currUserData) {
       )
       .then((response) => {
         showLikesInformation(response, currUserData, likeButton, likeAmount);
+      })
+      .catch((err) => {
+        setErrorText(err);
+        openModal(errorModal);
       });
   });
 
   if (data.owner["_id"] === currUserData) {
     deleteButton.addEventListener("click", () => {
-      functions.delete(data["_id"]).then(() => {
-        cardElement.remove();
-      });
+      functions
+        .delete(data["_id"])
+        .then(() => {
+          cardElement.remove();
+        })
+        .catch((err) => {
+          setErrorText(err);
+          openModal(errorModal);
+        });
     });
   } else {
     deleteButton.style.visibility = "hidden";
@@ -48,7 +58,7 @@ export function createCard(data, functions, currUserData) {
 function showLikesInformation(data, currUserData, likeButton, likeAmount) {
   if (
     data["likes"].some((value) => {
-      return (value["_id"]) === (currUserData);
+      return value["_id"] === currUserData;
     })
   ) {
     likeButton.classList.add("card__like-button_is-active");
