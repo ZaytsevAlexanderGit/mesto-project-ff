@@ -1,5 +1,8 @@
 # Проектная работа Mesto
+## Репозиторий 
 https://github.com/ZaytsevAlexanderGit/mesto-project-ff.git
+## Ссылка на GitHub Pages
+https://zaytsevalexandergit.github.io/mesto-project-ff/
 ------ 
 
 ## Яндекс Практикум. Курс "Фронтенд-разработчик".
