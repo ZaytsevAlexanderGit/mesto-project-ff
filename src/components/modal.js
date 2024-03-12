@@ -1,4 +1,5 @@
 //-----------------------------------------------------------------
+
 // Определение открытого модального окна
 function findOpenedModal() {
   return document.querySelector(".popup_is-opened");
@@ -8,7 +9,7 @@ function findOpenedModal() {
 // Функции открытия и закрытия модального окна
 export function openModal(element) {
   element.classList.add("popup_is-opened");
-  document.addEventListener("keydown", escModalClose);  
+  document.addEventListener("keydown", escModalClose);
 }
 
 export function closeModal(element) {
