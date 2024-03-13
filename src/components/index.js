@@ -1,6 +1,6 @@
 // Импорт CSS и других JS модулей
 import "../pages/index.css";
-import { closeModal, openModal, overlayClickModalClose } from "./modal.js";
+import { closeModal, openModal, closeModalOnOverlayClick } from "./modal.js";
 import { createCard } from "./card.js";
 import { enableValidation, clearValidation } from "./validation.js";
 import {
@@ -185,12 +185,13 @@ loadDataFromServer(userDataFields, renderInitialCards)
 profileEditButton.addEventListener("click", () => {
   setButtonText(profileForm, "Сохранить");
   openModal(profileEditModal);
+  profileForm.reset();
   profileFormTitle.value = profileTitle.textContent;
   profileFormDescription.value = profileDescription.textContent;
   clearValidation(profileForm, validationConfig);
 });
 
-profileEditModal.addEventListener("click", overlayClickModalClose);
+profileEditModal.addEventListener("click", closeModalOnOverlayClick);
 
 profileClosedButton.addEventListener("click", () => {
   closeModal(profileEditModal);
@@ -199,12 +200,12 @@ profileClosedButton.addEventListener("click", () => {
 // Данныые аватара
 avatarEditButton.addEventListener("click", () => {
   setButtonText(avatarForm, "Сохранить");
-  openModal(avatarEditModal);
   avatarForm.reset();
   clearValidation(avatarEditModal, validationConfig);
+  openModal(avatarEditModal);
 });
 
-avatarEditModal.addEventListener("click", overlayClickModalClose);
+avatarEditModal.addEventListener("click", closeModalOnOverlayClick);
 
 avatarClosedButton.addEventListener("click", () => {
   closeModal(avatarEditModal);
@@ -262,9 +263,9 @@ avatarForm.addEventListener("submit", handleAvatarFormSubmit);
 // Назначения для обработки работы с карточками
 addCardButton.addEventListener("click", () => {
   setButtonText(addCardForm, "Сохранить");
-  openModal(addCardModal);
   addCardForm.reset();
   clearValidation(addCardForm, validationConfig);
+  openModal(addCardModal);
 });
 
 addCardForm.addEventListener("submit", handleCardAddFormSubmit);
@@ -303,21 +304,21 @@ function handleCardAddFormSubmit(evt) {
   });
 }
 
-addCardModal.addEventListener("click", overlayClickModalClose);
+addCardModal.addEventListener("click", closeModalOnOverlayClick);
 
 closeCardButton.addEventListener("click", () => {
   closeModal(addCardModal);
 });
 
 // Работа с окном и формой ошибки работы с сервером
-errorModal.addEventListener("click", overlayClickModalClose);
+errorModal.addEventListener("click", closeModalOnOverlayClick);
 
 errorCloseButton.addEventListener("click", () => {
   closeModal(errorModal);
 });
 
 // Работа с окном и формой подтверждения удаления карточки
-deleteModal.addEventListener("click", overlayClickModalClose);
+deleteModal.addEventListener("click", closeModalOnOverlayClick);
 
 closeDeleteConfirm.addEventListener("click", () => {
   closeModal(deleteModal);
@@ -343,7 +344,7 @@ function handleCardDeleteFormSubmit(evt) {
 
 //-----------------------------------------------------------------
 // Назначения для обработки работы с модальным окном увеличения карточки
-imageModal.addEventListener("click", overlayClickModalClose);
+imageModal.addEventListener("click", closeModalOnOverlayClick);
 
 imageCloseButton.addEventListener("click", () => {
   closeModal(imageModal);

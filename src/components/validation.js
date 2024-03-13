@@ -44,14 +44,21 @@ function hasInvalidInput(inputList) {
   });
 }
 
+// Функции работы с состоянием кнопок отправки форм
+function enableButton(buttonElement, validationConfig) {
+  buttonElement.disabled = false;
+  buttonElement.classList.remove(validationConfig.inactiveButtonClass);
+}
+
+function disableButton(buttonElement, validationConfig) {
+  buttonElement.disabled = true;
+  buttonElement.classList.add(validationConfig.inactiveButtonClass);
+}
+
 function toggleButtonState(inputList, buttonElement, validationConfig) {
-  if (hasInvalidInput(inputList)) {
-    buttonElement.disabled = true;
-    buttonElement.classList.add(validationConfig.inactiveButtonClass);
-  } else {
-    buttonElement.disabled = false;
-    buttonElement.classList.remove(validationConfig.inactiveButtonClass);
-  }
+  if (hasInvalidInput(inputList))
+    disableButton(buttonElement, validationConfig);
+  else enableButton(buttonElement, validationConfig);
 }
 
 // Установка листенеров на все поля в одной форме
@@ -62,6 +69,12 @@ function setEventListeners(formElement, validationConfig) {
   const buttonElement = formElement.querySelector(
     validationConfig.submitButtonSelector
   );
+  toggleButtonState(inputList, buttonElement, validationConfig);
+
+  formElement.addEventListener("reset", () => {
+    disableButton(buttonElement, validationConfig);
+  });
+
   inputList.forEach((inputElement) => {
     inputElement.addEventListener("input", () => {
       isValid(formElement, inputElement, validationConfig);
@@ -81,16 +94,12 @@ export function enableValidation(validationConfig) {
 }
 
 // Очистка валидации формы документа
-export function clearValidation(profileForm, validationConfig) {
+export function clearValidation(formElement, validationConfig) {
   const inputList = Array.from(
-    profileForm.querySelectorAll(validationConfig.inputSelector)
-  );
-  const buttonElement = profileForm.querySelector(
-    validationConfig.submitButtonSelector
+    formElement.querySelectorAll(validationConfig.inputSelector)
   );
   inputList.forEach((inputElement) => {
     inputElement.setCustomValidity("");
-    hideInputError(profileForm, inputElement, validationConfig);
+    hideInputError(formElement, inputElement, validationConfig);
   });
-  toggleButtonState(inputList, buttonElement, validationConfig);
 }

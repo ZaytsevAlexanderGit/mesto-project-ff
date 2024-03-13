@@ -9,21 +9,21 @@ function findOpenedModal() {
 // Функции открытия и закрытия модального окна
 export function openModal(element) {
   element.classList.add("popup_is-opened");
-  document.addEventListener("keydown", escModalClose);
+  document.addEventListener("keydown", closeModalOnEscPress);
 }
 
 export function closeModal(element) {
   element.classList.remove("popup_is-opened");
-  document.removeEventListener("keydown", escModalClose);
+  document.removeEventListener("keydown", closeModalOnEscPress);
 }
 
-export function overlayClickModalClose(evt) {
+export function closeModalOnOverlayClick(evt) {
   if (evt.target.classList.contains("popup_is-opened")) {
     closeModal(evt.target);
   }
 }
 
-function escModalClose(evt) {
+function closeModalOnEscPress(evt) {
   if (evt.key === "Escape") {
     closeModal(findOpenedModal());
   }
