@@ -48,7 +48,6 @@ function renderInitialCards(dataList, userData) {
 //Загрузка всех данных с сервера.
 loadDataFromServer()
   .then(([user, cards]) => {
-    debugger;
     showUserProfileInfo(constants.userDataFields, user);
     renderInitialCards(cards, user["_id"]);
     constants.accountInfo.id = user["_id"];
