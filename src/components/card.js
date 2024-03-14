@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------
 // Импорт необходимых DOM элементов и функций
-import { imageModal, errorModal, cardTemplate, setErrorText } from "./index";
-
+import { imageModal, errorModal, cardTemplate } from "./utils/constants.js";
+import { setErrorText } from "./utils/utils.js";
 import { openModal } from "./modal";
 //-----------------------------------------------------------------
 // Вспомогательные функции

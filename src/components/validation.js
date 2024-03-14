@@ -72,7 +72,7 @@ function setEventListeners(formElement, validationConfig) {
   toggleButtonState(inputList, buttonElement, validationConfig);
 
   formElement.addEventListener("reset", () => {
-    disableButton(buttonElement, validationConfig);
+    toggleButtonState(inputList, buttonElement, validationConfig);
   });
 
   inputList.forEach((inputElement) => {
@@ -95,6 +95,7 @@ export function enableValidation(validationConfig) {
 
 // Очистка валидации формы документа
 export function clearValidation(formElement, validationConfig) {
+  formElement.reset();
   const inputList = Array.from(
     formElement.querySelectorAll(validationConfig.inputSelector)
   );

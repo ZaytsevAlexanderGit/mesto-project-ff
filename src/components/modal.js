@@ -17,12 +17,6 @@ export function closeModal(element) {
   document.removeEventListener("keydown", closeModalOnEscPress);
 }
 
-export function closeModalOnOverlayClick(evt) {
-  if (evt.target.classList.contains("popup_is-opened")) {
-    closeModal(evt.target);
-  }
-}
-
 function closeModalOnEscPress(evt) {
   if (evt.key === "Escape") {
     closeModal(findOpenedModal());
