@@ -23,9 +23,6 @@ import {
   handleSubmitWithCheck,
 } from "./utils/utils.js";
 
-// Переменная с хранением ID пользователя
-let myGlobalID;
-
 //-----------------------------------------------------------------
 // Объявление Вспомогательных функций
 // Определение функции первичного рендера карточек и их отрисовка
@@ -48,20 +45,21 @@ function renderInitialCards(dataList, userData) {
 //-----------------------------------------------------------------
 // Начальная загрузка всех данных и инициализация валидации всех форм
 
-// Инициализация валидации всех форм
-enableValidation(constants.validationConfig);
-
 //Загрузка всех данных с сервера.
 loadDataFromServer()
   .then(([user, cards]) => {
+    debugger;
     showUserProfileInfo(constants.userDataFields, user);
     renderInitialCards(cards, user["_id"]);
-    myGlobalID = user["_id"];
+    constants.accountInfo.id = user["_id"];
   })
   .catch((err) => {
     setErrorText(`Ошибка сервера:${err}`);
     openModal(constants.errorModal);
   });
+
+// Инициализация валидации всех форм
+enableValidation(constants.validationConfig);
 
 //-----------------------------------------------------------------
 
@@ -81,6 +79,7 @@ constants.popups.forEach((popup) => {
   });
 });
 
+//-----------------------------------------------------------------
 // Назначения для редактирования данных профиля и аватара
 
 // Данныые профиля
@@ -167,7 +166,7 @@ function handleCardAddFormSubmit(evt) {
             like: likeCardOnServer,
             zoom: imageZoomFunction,
           },
-          myGlobalID
+          constants.accountInfo.id
         )
       );
       closeOpenedPopup(constants.popups);

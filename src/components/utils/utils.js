@@ -77,7 +77,7 @@ export function handleSubmitWithCheck(
         renderLoading(true, submitButton, initialText, loadingText);
         return request();
       }
-      return Promise.reject(`URL не является картинкой`);
+      return Promise.reject(constants.urlErrorMessage);
     })
     .then(() => {
       evt.target.reset();
